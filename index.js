@@ -318,6 +318,7 @@ RedisClient.prototype.flush_and_error = function (error_attributes, options) {
                 aggregated_errors.push(err);
             }
         }
+        console.info("Aggregated errors - Cubiko instrumentation", aggregated_errors)
     }
     // Currently this would be a breaking change, therefore it's only emitted in debug_mode
     if (exports.debug_mode && aggregated_errors.length) {
