@@ -226,11 +226,15 @@ RedisClient.prototype.create_stream = function () {
     });
 
     this.stream.once('close', function (hadError) {
-        self.connection_gone('close');
+        process.nextTick(function(){
+            self.connection_gone('close');
+        });
     });
 
     this.stream.once('end', function () {
-        self.connection_gone('end');
+        process.nextTick(function(){
+            self.connection_gone('end');
+        });
     });
 
     this.stream.on('drain', function () {
