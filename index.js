@@ -133,9 +133,15 @@ util.inherits(RedisClient, EventEmitter);
 RedisClient.connection_id = 0;
 
 function create_parser (self) {
+    // tracks if this particular reply parser has been killed
+    var parser_killed = false;
+
     return new Parser({
         returnReply: function (data) {
-            self.return_reply(data);
+            if(!parser_killed){
+                // if we're processing a fatal error, don't reply at all
+                self.return_reply(data);
+            }
         },
         returnError: function (err) {
             // Return a ReplyError to indicate Redis returned an error
@@ -146,6 +152,7 @@ function create_parser (self) {
             // Note: the execution order is important. First flush and emit, then create the stream
             err.message += '. Please report this.';
             self.ready = false;
+            parser_killed = true;
             self.flush_and_error({
                 message: 'Fatal error encountered. Command aborted.',
                 code: 'NR_FATAL'
