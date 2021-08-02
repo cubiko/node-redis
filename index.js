@@ -296,6 +296,10 @@ RedisClient.prototype.warn = function (msg) {
 
 // Flush provided queues, erroring any items with a callback first
 RedisClient.prototype.flush_and_error = function (error_attributes, options) {
+    console.log(JSON.stringify({
+        message: "Flushing - Cubiko instrumentation",
+        level: "warn"
+    }))
     options = options || {};
     var aggregated_errors = [];
     var queue_names = options.queues || ['command_queue', 'offline_queue']; // Flush the command_queue first to keep the order intakt
@@ -325,7 +329,12 @@ RedisClient.prototype.flush_and_error = function (error_attributes, options) {
                 aggregated_errors.push(err);
             }
         }
-        console.info("Aggregated errors - Cubiko instrumentation", aggregated_errors)
+        console.log(JSON.stringify({
+            message: "Aggregated errors - Cubiko instrumentation",
+            aggregated_errors,
+            error: aggregated_errors[0],
+            level: "error"
+        }))
     }
     // Currently this would be a breaking change, therefore it's only emitted in debug_mode
     if (exports.debug_mode && aggregated_errors.length) {
